@@ -8,10 +8,23 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null);
   const [movies, setMovies] = useState([]);
   const [query, setQuery] = useState("");
-  const watched = [];
+  const [watched, setWatched] = useState([]);
 
   function handleSelectMovie(id) {
     setSelectedId(id === selectedId ? null : id);
+  }
+
+  function handleCloseMovie() {
+    setSelectedId(null);
+    // document.title = "usePopcorn";
+  }
+
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
+
+  function handleDeleteWatched(id) {
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
   useEffect(
@@ -62,6 +75,9 @@ export default function App() {
         onSelectMovie={handleSelectMovie}
         selectedId={selectedId}
         watched={watched}
+        onAddWatched={handleAddWatched}
+        onDeleteWatched={handleDeleteWatched}
+        onCloseMovie={handleCloseMovie}
       />
     </>
   );
