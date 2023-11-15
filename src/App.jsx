@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 const KEY = "f21f080b";
 
 export default function App() {
-  const [selectedId, setSelectedId] = useState(null);
-  const [movies, setMovies] = useState([]);
   const [query, setQuery] = useState("");
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   function handleSelectMovie(id) {
     setSelectedId(id === selectedId ? null : id);
@@ -16,7 +18,6 @@ export default function App() {
 
   function handleCloseMovie() {
     setSelectedId(null);
-    // document.title = "usePopcorn";
   }
 
   function handleAddWatched(movie) {
@@ -33,6 +34,8 @@ export default function App() {
 
       async function fetchMovies() {
         try {
+          setIsLoading(true);
+          setError("");
           const res = await fetch(
             `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`,
             { signal: controller.signal }
@@ -46,10 +49,14 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not Found");
 
           setMovies(data.Search);
+          setError("");
         } catch (err) {
           if (err.name !== "AbortError") {
             console.log(err.message);
+            setError(err.message);
           }
+        } finally {
+          setIsLoading(false);
         }
       }
 
@@ -78,6 +85,8 @@ export default function App() {
         onAddWatched={handleAddWatched}
         onDeleteWatched={handleDeleteWatched}
         onCloseMovie={handleCloseMovie}
+        isLoading={isLoading}
+        error={error}
       />
     </>
   );

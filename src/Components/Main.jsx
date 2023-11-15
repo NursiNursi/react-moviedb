@@ -89,8 +89,8 @@ function WatchedList({ watched, onDeleteWatched }) {
 function Watched({ movie, onDeleteWatched }) {
   return (
     <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>
@@ -182,7 +182,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     [title]
   );
 
-  function handdleAdd() {
+  function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
       title,
@@ -229,7 +229,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
                     onSetRating={setUserRating}
                   />
                   {userRating && (
-                    <button className="btn-add" onClick={handdleAdd}>
+                    <button className="btn-add" onClick={handleAdd}>
                       + Add to list
                     </button>
                   )}
@@ -256,6 +256,15 @@ function Loader() {
   return <p className="loader">Loading...</p>;
 }
 
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⛔</span>
+      {message}
+    </p>
+  );
+}
+
 export default function Main({
   movies,
   onSelectMovie,
@@ -264,11 +273,17 @@ export default function Main({
   selectedId,
   onDeleteWatched,
   onCloseMovie,
+  isLoading,
+  error,
 }) {
   return (
     <main className="main">
       <Box>
-        <MovieList movies={movies} onSelectMovie={onSelectMovie} />
+        {isLoading && <Loader />}
+        {!isLoading && !error && (
+          <MovieList movies={movies} onSelectMovie={onSelectMovie} />
+        )}
+        {error && <ErrorMessage message={error} />}
       </Box>
       <Box>
         {selectedId ? (
