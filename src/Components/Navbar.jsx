@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { MovieContext } from "../App";
+
 function Logo() {
   return (
     <div className="logo">
@@ -7,14 +10,16 @@ function Logo() {
   );
 }
 
-function Search({ query, setQuery }) {
+function Search() {
+  const { query, dispatch } = useContext(MovieContext);
+
   return (
     <input
       className="search"
       type="text"
       placeholder="Search movies..."
       value={query}
-      onChange={(e) => setQuery(e.target.value)}
+      onChange={(e) => dispatch({ type: "setQuery", payload: e.target.value })}
     />
   );
 }
@@ -27,12 +32,12 @@ function NumResult({ movies }) {
   );
 }
 
-export default function NavBar({ movies, query, setQuery }) {
+export default function NavBar() {
   return (
     <nav className="nav-bar">
       <Logo />
-      <Search query={query} setQuery={setQuery} />
-      <NumResult movies={movies} />
+      <Search />
+      <NumResult />
     </nav>
   );
 }

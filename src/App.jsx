@@ -1,16 +1,60 @@
 import NavBar from "./Components/Navbar";
 import Main from "./Components/Main";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useReducer, useState } from "react";
 
 const KEY = "f21f080b";
 
+const initialState = {
+  movies: [],
+  query: "",
+  watched: [],
+  selectedId: null,
+  isLoading: false,
+  error: "",
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "dataReceived":
+      return {
+        ...state,
+        movies: action.payload,
+      };
+    case "dataFailed":
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case "setQuery":
+      return {
+        ...state,
+        query: action.payload,
+      };
+    case "addWatched":
+      return {
+        ...state,
+        watched: [...state.watched, action.payload],
+      };
+    case "deleteWatched":
+      return {
+        ...state,
+        watched: [...state.watched, action.payload],
+      };
+    default:
+      throw new Error("Action unknown");
+  }
+}
+
+export const MovieContext = createContext();
+
 export default function App() {
-  const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [{ movies, query, error, watched }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
+
   const [selectedId, setSelectedId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
   function handleSelectMovie(id) {
     setSelectedId(id === selectedId ? null : id);
@@ -20,14 +64,6 @@ export default function App() {
     setSelectedId(null);
   }
 
-  function handleAddWatched(movie) {
-    setWatched((watched) => [...watched, movie]);
-  }
-
-  function handleDeleteWatched(id) {
-    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
-  }
-
   useEffect(
     function () {
       const controller = new AbortController();
@@ -35,25 +71,18 @@ export default function App() {
       async function fetchMovies() {
         try {
           setIsLoading(true);
-          setError("");
           const res = await fetch(
             `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`,
             { signal: controller.signal }
           );
-
           if (!res.ok)
             throw new Error("Something went wrong with fetching movies");
-
           const data = await res.json();
-          console.log(data);
           if (data.Response === "False") throw new Error("Movie not Found");
-
-          setMovies(data.Search);
-          setError("");
+          dispatch({ type: "dataReceived", payload: data.Search });
         } catch (err) {
           if (err.name !== "AbortError") {
-            console.log(err.message);
-            setError(err.message);
+            dispatch({ type: "dataFailed", payload: err.message });
           }
         } finally {
           setIsLoading(false);
@@ -61,7 +90,7 @@ export default function App() {
       }
 
       if (query.length < 3) {
-        setMovies([]);
+        dispatch({ type: "dataReceived", payload: [] });
         return;
       }
 
@@ -75,19 +104,18 @@ export default function App() {
   );
 
   return (
-    <>
-      <NavBar movies={movies} query={query} setQuery={setQuery} />
-      <Main
-        movies={movies}
-        onSelectMovie={handleSelectMovie}
-        selectedId={selectedId}
-        watched={watched}
-        onAddWatched={handleAddWatched}
-        onDeleteWatched={handleDeleteWatched}
-        onCloseMovie={handleCloseMovie}
-        isLoading={isLoading}
-        error={error}
-      />
-    </>
+    <MovieContext.Provider
+      value={{
+        movies,
+        query,
+        dispatch,
+        watched,
+        onCloseMovie: handleCloseMovie,
+        onSelectMovie: handleSelectMovie,
+      }}
+    >
+      <NavBar />
+      <Main selectedId={selectedId} isLoading={isLoading} error={error} />
+    </MovieContext.Provider>
   );
 }
