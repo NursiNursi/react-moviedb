@@ -1,7 +1,13 @@
+import { useContext } from "react";
+import { MovieContext } from "../App";
+
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-export function WatchedSummary({ watched }) {
+export function WatchedSummary() {
+  const { watched } = useContext(MovieContext);
+  console.log(watched);
+
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
   const avgRuntime = average(watched.map((movie) => movie.runtime));
@@ -30,21 +36,20 @@ export function WatchedSummary({ watched }) {
   );
 }
 
-export function WatchedList({ watched, onDeleteWatched }) {
+export function WatchedList() {
+  const { watched } = useContext(MovieContext);
   return (
     <ul className="list">
       {watched.map((movie) => (
-        <Watched
-          key={movie.imdbID}
-          movie={movie}
-          onDeleteWatched={onDeleteWatched}
-        />
+        <Watched key={movie.imdbID} movie={movie} />
       ))}
     </ul>
   );
 }
 
-function Watched({ movie, onDeleteWatched }) {
+function Watched({ movie }) {
+  const { dispatch } = useContext(MovieContext);
+
   return (
     <li>
       <img src={movie.poster} alt={`${movie.title} poster`} />
@@ -65,7 +70,9 @@ function Watched({ movie, onDeleteWatched }) {
       </div>
       <button
         className="btn-delete"
-        onClick={() => onDeleteWatched(movie.imdbID)}
+        onClick={() =>
+          dispatch({ type: "deleteWatched", payload: movie.imdbID })
+        }
       >
         X
       </button>

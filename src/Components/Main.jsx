@@ -24,39 +24,21 @@ function ErrorMessage({ message }) {
   );
 }
 
-export default function Main({
-  movies,
-  onSelectMovie,
-  watched,
-  onAddWatched,
-  selectedId,
-  onDeleteWatched,
-  onCloseMovie,
-  isLoading,
-  error,
-}) {
+export default function Main({ selectedId, isLoading, error }) {
   return (
     <main className="main">
       <Box>
         {isLoading && <Loader />}
-        {!isLoading && !error && (
-          <MovieList movies={movies} onSelectMovie={onSelectMovie} />
-        )}
+        {!isLoading && !error && <MovieList />}
         {error && <ErrorMessage message={error} />}
       </Box>
       <Box>
         {selectedId ? (
-          <MovieDetails
-            selectedId={selectedId}
-            onCloseMovie={onCloseMovie}
-            onAddWatched={onAddWatched}
-            onDeleteWatched={onDeleteWatched}
-            watched={watched}
-          />
+          <MovieDetails selectedId={selectedId} />
         ) : (
           <>
-            <WatchedSummary watched={watched} />
-            <WatchedList watched={watched} onDeleteWatched={onDeleteWatched} />
+            <WatchedSummary />
+            <WatchedList />
           </>
         )}
       </Box>

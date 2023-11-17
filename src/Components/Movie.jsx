@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
+import { MovieContext } from "../App";
 
 const KEY = "f21f080b";
 
-export function MovieList({ movies, onSelectMovie }) {
+export function MovieList() {
+  const { movies, onSelectMovie } = useContext(MovieContext);
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
@@ -29,12 +31,9 @@ function Movie({ movie, onSelectMovie }) {
   );
 }
 
-export function MovieDetails({
-  selectedId,
-  onCloseMovie,
-  onAddWatched,
-  watched,
-}) {
+export function MovieDetails({ selectedId }) {
+  const { onCloseMovie, watched, dispatch } = useContext(MovieContext);
+
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
@@ -111,7 +110,7 @@ export function MovieDetails({
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
     };
-    onAddWatched(newWatchedMovie);
+    dispatch({ type: "addWatched", payload: newWatchedMovie });
     onCloseMovie();
   }
 
