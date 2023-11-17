@@ -38,7 +38,9 @@ function reducer(state, action) {
     case "deleteWatched":
       return {
         ...state,
-        watched: [...state.watched, action.payload],
+        watched: state.watched.filter(
+          (movie) => movie.imdbID !== action.payload
+        ),
       };
     default:
       throw new Error("Action unknown");

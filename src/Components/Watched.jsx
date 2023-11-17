@@ -48,7 +48,7 @@ export function WatchedList() {
 }
 
 function Watched({ movie }) {
-  const { onDeleteWatched } = useContext(MovieContext);
+  const { dispatch } = useContext(MovieContext);
 
   return (
     <li>
@@ -70,7 +70,9 @@ function Watched({ movie }) {
       </div>
       <button
         className="btn-delete"
-        onClick={() => onDeleteWatched(movie.imdbID)}
+        onClick={() =>
+          dispatch({ type: "deleteWatched", payload: movie.imdbID })
+        }
       >
         X
       </button>
