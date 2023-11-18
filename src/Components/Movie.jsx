@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
-import { MovieContext } from "../App";
+import { useMovie } from "../contexts/MovieContext";
 
 const KEY = "f21f080b";
 
 export function MovieList() {
-  const { movies, onSelectMovie } = useContext(MovieContext);
+  const { movies, onSelectMovie } = useMovie();
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
@@ -32,7 +32,7 @@ function Movie({ movie, onSelectMovie }) {
 }
 
 export function MovieDetails({ selectedId }) {
-  const { onCloseMovie, watched, dispatch } = useContext(MovieContext);
+  const { onCloseMovie, watched, dispatch } = useMovie();
 
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);

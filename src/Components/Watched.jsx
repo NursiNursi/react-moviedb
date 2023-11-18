@@ -1,12 +1,10 @@
-import { useContext } from "react";
-import { MovieContext } from "../App";
+import { useMovie } from "../contexts/MovieContext";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export function WatchedSummary() {
-  const { watched } = useContext(MovieContext);
-  console.log(watched);
+  const { watched } = useMovie();
 
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
@@ -37,7 +35,7 @@ export function WatchedSummary() {
 }
 
 export function WatchedList() {
-  const { watched } = useContext(MovieContext);
+  const { watched } = useMovie();
   return (
     <ul className="list">
       {watched.map((movie) => (
@@ -48,7 +46,7 @@ export function WatchedList() {
 }
 
 function Watched({ movie }) {
-  const { dispatch } = useContext(MovieContext);
+  const { dispatch } = useMovie();
 
   return (
     <li>
