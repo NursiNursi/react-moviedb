@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import { MovieContext } from "../App";
+import { useMovie } from "../contexts/MovieContext";
 
 function Logo() {
   return (
@@ -11,7 +10,7 @@ function Logo() {
 }
 
 function Search() {
-  const { query, dispatch } = useContext(MovieContext);
+  const { query, dispatch } = useMovie();
 
   return (
     <input
