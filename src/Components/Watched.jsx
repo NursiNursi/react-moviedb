@@ -1,10 +1,14 @@
-import { useMovie } from "../contexts/MovieContext";
+// import { useMovie } from "../contexts/MovieContext";
+
+import { useDispatch, useSelector } from "react-redux";
+import { deleteWatched } from "./slice";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export function WatchedSummary() {
-  const { watched } = useMovie();
+  const { watched } = useSelector((store) => store);
+  // const { watched } = useMovie();
 
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
@@ -35,7 +39,9 @@ export function WatchedSummary() {
 }
 
 export function WatchedList() {
-  const { watched } = useMovie();
+  const { watched } = useSelector((store) => store);
+
+  // const { watched } = useMovie();
   return (
     <ul className="list">
       {watched.map((movie) => (
@@ -46,8 +52,8 @@ export function WatchedList() {
 }
 
 function Watched({ movie }) {
-  const { dispatch } = useMovie();
-
+  // const { dispatch } = useMovie();
+  const dispatch = useDispatch();
   return (
     <li>
       <img src={movie.poster} alt={`${movie.title} poster`} />
@@ -68,8 +74,9 @@ function Watched({ movie }) {
       </div>
       <button
         className="btn-delete"
-        onClick={() =>
-          dispatch({ type: "deleteWatched", payload: movie.imdbID })
+        onClick={
+          () => dispatch(deleteWatched(movie.imdbID))
+          // dispatch({ type: "deleteWatched", payload: movie.imdbID })
         }
       >
         X

@@ -1,4 +1,5 @@
-import { useMovie } from "../contexts/MovieContext";
+import { useDispatch, useSelector } from "react-redux";
+import { search } from "./slice";
 
 function Logo() {
   return (
@@ -10,7 +11,9 @@ function Logo() {
 }
 
 function Search() {
-  const { query, dispatch } = useMovie();
+  const { query } = useSelector((store) => store);
+  // const { query, dispatch } = useMovie();
+  const dispatch = useDispatch();
 
   return (
     <input
@@ -18,7 +21,8 @@ function Search() {
       type="text"
       placeholder="Search movies..."
       value={query}
-      onChange={(e) => dispatch({ type: "setQuery", payload: e.target.value })}
+      onChange={(e) => dispatch(search(e.target.value))}
+      // onChange={(e) => dispatch({ type: "setQuery", payload: e.target.value })}
     />
   );
 }

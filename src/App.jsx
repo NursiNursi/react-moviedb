@@ -1,12 +1,27 @@
 import NavBar from "./Components/Navbar";
 import Main from "./Components/Main";
 import { useEffect, useState } from "react";
-import { useMovie } from "./contexts/MovieContext";
+import { useDispatch, useSelector } from "react-redux";
+import { fail, receive } from "./components/slice";
 
 const KEY = "f21f080b";
 
 export default function App() {
-  const { query, error, selectedId, dispatch } = useMovie();
+  const { query, selectedId, error } = useSelector((state) => state);
+  // const [selectedId, setSelectedId] = useState(null);
+
+  // function handleSelectMovie(id) {
+  //   setSelectedId(id === selectedId ? null : id);
+  // }
+
+  // function handleCloseMovie() {
+  //   setSelectedId(null);
+  // }
+  // console.log(movies);
+
+  const dispatch = useDispatch();
+
+  // const { query, error, selectedId, dispatch } = useMovie();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(
@@ -24,10 +39,12 @@ export default function App() {
             throw new Error("Something went wrong with fetching movies");
           const data = await res.json();
           if (data.Response === "False") throw new Error("Movie not Found");
-          dispatch({ type: "dataReceived", payload: data.Search });
+          dispatch(receive(data.Search));
+          // dispatch({ type: "dataReceived", payload: data.Search });
         } catch (err) {
           if (err.name !== "AbortError") {
-            dispatch({ type: "dataFailed", payload: err.message });
+            dispatch(fail(err.message));
+            // dispatch({ type: "dataFailed", payload: err.message });
           }
         } finally {
           setIsLoading(false);
@@ -35,7 +52,8 @@ export default function App() {
       }
 
       if (query.length < 3) {
-        dispatch({ type: "dataReceived", payload: [] });
+        dispatch(receive([]));
+        // dispatch({ type: "dataReceived", payload: [] });
         return;
       }
 

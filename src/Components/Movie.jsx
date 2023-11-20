@@ -1,24 +1,35 @@
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
-import { useMovie } from "../contexts/MovieContext";
+// import { useMovie } from "../contexts/MovieContext";
+import { useDispatch, useSelector } from "react-redux";
+import { addWatched, close, select } from "./slice";
 
 const KEY = "f21f080b";
 
 export function MovieList() {
-  const { movies, onSelectMovie } = useMovie();
+  const { movies } = useSelector((store) => store);
+
+  // const { movies, onSelectMovie } = useMovie();
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} onSelectMovie={onSelectMovie} />
+        <Movie
+          movie={movie}
+          key={movie.imdbID}
+          // onSelectMovie={handleSelectMovie}
+        />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie, onSelectMovie }) {
+function Movie({ movie }) {
+  const dispatch = useDispatch();
+
   return (
-    <li onClick={() => onSelectMovie(movie.imdbID)}>
+    // <li onClick={() => onSelectMovie(movie.imdbID)}>
+    <li onClick={() => dispatch(select(movie.imdbID))}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -32,7 +43,9 @@ function Movie({ movie, onSelectMovie }) {
 }
 
 export function MovieDetails({ selectedId }) {
-  const { onCloseMovie, watched, dispatch } = useMovie();
+  const { watched } = useSelector((store) => store);
+  // const { onCloseMovie, watched, dispatch } = useMovie();
+  const dispatch = useDispatch();
 
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +72,8 @@ export function MovieDetails({ selectedId }) {
     function () {
       function callback(e) {
         if (e.code === "Escape") {
-          onCloseMovie();
+          // onCloseMovie();
+          dispatch(close());
         }
       }
 
@@ -69,7 +83,7 @@ export function MovieDetails({ selectedId }) {
         document.removeEventListener("keydown", callback);
       };
     },
-    [onCloseMovie]
+    [dispatch]
   );
 
   useEffect(
@@ -110,8 +124,10 @@ export function MovieDetails({ selectedId }) {
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
     };
-    dispatch({ type: "addWatched", payload: newWatchedMovie });
-    onCloseMovie();
+    dispatch(addWatched(newWatchedMovie));
+    // dispatch({ type: "addWatched", payload: newWatchedMovie });
+    // onCloseMovie();
+    dispatch(close());
   }
 
   return (
@@ -121,7 +137,7 @@ export function MovieDetails({ selectedId }) {
       ) : (
         <>
           <header>
-            <button className="btn-back" onClick={onCloseMovie}>
+            <button className="btn-back" onClick={() => dispatch(close())}>
               &larr;
             </button>
             <img src={poster} alt={`Poster of ${movie}`} />

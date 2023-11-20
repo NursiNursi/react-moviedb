@@ -24,6 +24,16 @@ export default function reducer(state = initialState, action) {
         ...state,
         query: action.payload,
       };
+    case "movie/select":
+      return {
+        ...state,
+        selectedId: action.payload === state.selectedId ? null : action.payload,
+      };
+    case "movie/close":
+      return {
+        ...state,
+        selectedId: null,
+      };
     case "watched/add":
       return {
         ...state,
@@ -49,6 +59,12 @@ export function fail(error) {
 }
 export function search(query) {
   return { type: "movie/search", payload: query };
+}
+export function select(movie) {
+  return { type: "movie/select", payload: movie };
+}
+export function close() {
+  return { type: "movie/close" };
 }
 export function addWatched(movie) {
   return { type: "watched/add", payload: movie };
